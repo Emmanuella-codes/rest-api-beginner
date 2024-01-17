@@ -20,23 +20,16 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     //authenticate user without knowing their password
     const expectedHash = authentication(user.authentication.salt, password);
-    const storedPasswordBuffer = Buffer.from(
-      user.authentication.password,
-      "base64"
-    );
 
-    if (!storedPasswordBuffer.equals(expectedHash)) {
+    if (user.authentication.password != expectedHash) {
       return res.sendStatus(403);
     }
-    /*   if (user.authentication.password != expectedHash) {
-      return res.sendStatus(403);
-    } */
 
     const salt = random();
     user.authentication.sessionToken = authentication(
       salt,
       user._id.toString()
-    ).toString("base64");
+    );
 
     await user.save();
 
